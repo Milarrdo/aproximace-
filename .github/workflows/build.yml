@@ -1,0 +1,34 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Generate minimal
+        run: python generate_pi_excel.py --out Pi_aproximace_CZ_minimal.xlsx --rows 3000 --type minimal
+
+      - name: Generate full+Leibniz
+        run: python generate_pi_excel.py --out Pi_aproximace_CZ_vzorce.xlsx --rows 3000 --type full --with-leibniz
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: excel-outputs
+          path: |
+            Pi_aproximace_CZ_minimal.xlsx
+            Pi_aproximace_CZ_vzorce.xlsx
